@@ -198,10 +198,10 @@ def update_record(client, page_id, activity_date, value, pace, activity_name, is
     }
 
     if value:
-        properties["Value"] = {"rich_text": [{"text": {"content": value}}]}
+        properties["Valeur"] = {"rich_text": [{"text": {"content": value}}]}
 
     if pace:
-        properties["Pace"] = {"rich_text": [{"text": {"content": pace}}]}
+        properties["Allure"] = {"rich_text": [{"text": {"content": pace}}]}
 
     icon = get_icon_for_record(activity_name)
     cover = get_cover_for_record(activity_name)
@@ -221,17 +221,17 @@ def update_record(client, page_id, activity_date, value, pace, activity_name, is
 def write_new_record(client, database_id, activity_date, activity_type, activity_name, typeId, value, pace):
     properties = {
         "Date": {"date": {"start": activity_date}},
-        "Activity Type": {"select": {"name": activity_type}},
+        "Type d'activité": {"select": {"name": activity_type}},
         "Record": {"title": [{"text": {"content": activity_name}}]},
-        "typeId": {"number": typeId},
+        "ID type Garmin": {"number": typeId},
         "PR": {"checkbox": True}
     }
 
     if value:
-        properties["Value"] = {"rich_text": [{"text": {"content": value}}]}
+        properties["Valeur"] = {"rich_text": [{"text": {"content": value}}]}
 
     if pace:
-        properties["Pace"] = {"rich_text": [{"text": {"content": pace}}]}
+        properties["Allure"] = {"rich_text": [{"text": {"content": pace}}]}
 
     icon = get_icon_for_record(activity_name)
     cover = get_cover_for_record(activity_name)

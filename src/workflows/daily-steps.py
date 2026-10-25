@@ -27,7 +27,7 @@ def daily_steps_exist(client, database_id, activity_date):
         filter={
             "and": [
                 {"property": "Date", "date": {"equals": activity_date}},
-                {"property": "Activity Type", "title": {"equals": "Walking"}}
+                {"property": "Type d'activité", "title": {"equals": "Walking"}}
             ]
         }
     )
@@ -43,10 +43,10 @@ def steps_need_update(existing_steps, new_steps):
     activity_type = "Walking"
 
     return (
-        existing_props['Total Steps']['number'] != new_steps.get('totalSteps') or
-        existing_props['Step Goal']['number'] != new_steps.get('stepGoal') or
-        existing_props['Total Distance (km)']['number'] != new_steps.get('totalDistance') or
-        existing_props['Activity Type']['title'] != activity_type
+        existing_props["Total de pas"]['number'] != new_steps.get('totalSteps') or
+        existing_props["Objectif de pas"]['number'] != new_steps.get('stepGoal') or
+        existing_props["Distance totale (km)"]['number'] != new_steps.get('totalDistance') or
+        existing_props["Type d'activité"]['title'] != activity_type
     )
 
 
@@ -58,10 +58,10 @@ def update_daily_steps(client, existing_steps, new_steps):
     if total_distance is None:
         total_distance = 0
     properties = {
-        "Activity Type": {"title": [{"text": {"content": "Walking"}}]},
-        "Total Steps": {"number": new_steps.get('totalSteps')},
-        "Step Goal": {"number": new_steps.get('stepGoal')},
-        "Total Distance (km)": {"number": round(total_distance / 1000, 2)}
+        "Type d'activité": {"title": [{"text": {"content": "Walking"}}]},
+        "Total de pas": {"number": new_steps.get('totalSteps')},
+        "Objectif de pas": {"number": new_steps.get('stepGoal')},
+        "Distance totale (km)": {"number": round(total_distance / 1000, 2)}
     }
 
     update = {
@@ -80,11 +80,11 @@ def create_daily_steps(client, database_id, steps):
     if total_distance is None:
         total_distance = 0
     properties = {
-        "Activity Type": {"title": [{"text": {"content": "Walking"}}]},
+        "Type d'activité": {"title": [{"text": {"content": "Walking"}}]},
         "Date": {"date": {"start": steps.get('calendarDate')}},
-        "Total Steps": {"number": steps.get('totalSteps')},
-        "Step Goal": {"number": steps.get('stepGoal')},
-        "Total Distance (km)": {"number": round(total_distance / 1000, 2)}
+        "Total de pas": {"number": steps.get('totalSteps')},
+        "Objectif de pas": {"number": steps.get('stepGoal')},
+        "Distance totale (km)": {"number": round(total_distance / 1000, 2)}
     }
 
     page = {

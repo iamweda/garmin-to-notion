@@ -141,8 +141,8 @@ def activity_exists(
                 {"property": "Date", "date": {"on_or_after": lookup_min_date.isoformat()}},
                 {"property": "Date", "date": {"on_or_before": lookup_max_date.isoformat()}},
                 # Further refine the search by activity type and name
-                {"property": "Activity Type", "select": {"equals": lookup_type}},
-                {"property": "Activity Name", "title": {"equals": activity_name}}
+                {"property": "Type d'activité", "select": {"equals": lookup_type}},
+                {"property": "Nom de l'activité", "title": {"equals": activity_name}}
             ]
         }
     )
@@ -159,37 +159,37 @@ def activity_needs_update(existing_activity: dict, new_activity: dict) -> bool:
         activity_name
     )
 
-    # Check if 'Subactivity Type' property exists
+    # Check if "Sous-type d'activité" property exists
     has_subactivity = (
-        'Subactivity Type' in existing_props and
-        existing_props['Subactivity Type'] is not None and
-        existing_props['Subactivity Type'].get('select') is not None
+        "Sous-type d'activité" in existing_props and
+        existing_props["Sous-type d'activité"] is not None and
+        existing_props["Sous-type d'activité"].get('select') is not None
     )
 
     return (
         existing_props['Distance (km)']['number'] != round(new_activity.get('distance', 0) / 1000, 2) or
-        existing_props['Duration (min)']['number'] != round(new_activity.get('duration', 0) / 60, 2) or
+        existing_props["Durée (min)"]['number'] != round(new_activity.get('duration', 0) / 60, 2) or
         existing_props['Calories']['number'] != round(new_activity.get('calories', 0)) or
-        existing_props['Avg Pace']['rich_text'][0]['text']['content'] != format_pace(
+        existing_props["Allure moyenne"]['rich_text'][0]['text']['content'] != format_pace(
         new_activity.get('averageSpeed', 0)
     ) or
-        existing_props['Avg Power']['number'] != round(new_activity.get('avgPower', 0), 1) or
-        existing_props['Max Power']['number'] != round(new_activity.get('maxPower', 0), 1) or
-        existing_props['Training Effect']['select']['name'] != format_training_effect(
+        existing_props["Puissance moyenne"]['number'] != round(new_activity.get('avgPower', 0), 1) or
+        existing_props["Puissance max"]['number'] != round(new_activity.get('maxPower', 0), 1) or
+        existing_props["Effet d'entraînement"]['select']['name'] != format_training_effect(
         new_activity.get('trainingEffectLabel', 'Unknown')
     ) or
-        existing_props['Aerobic']['number'] != round(new_activity.get('aerobicTrainingEffect', 0), 1) or
-        existing_props['Aerobic Effect']['select']['name'] != format_training_message(
+        existing_props["Score aérobie"]['number'] != round(new_activity.get('aerobicTrainingEffect', 0), 1) or
+        existing_props["Effet aérobie"]['select']['name'] != format_training_message(
         new_activity.get('aerobicTrainingEffectMessage', 'Unknown')
     ) or
-        existing_props['Anaerobic']['number'] != round(new_activity.get('anaerobicTrainingEffect', 0), 1) or
-        existing_props['Anaerobic Effect']['select']['name'] != format_training_message(
+        existing_props["Score anaérobie"]['number'] != round(new_activity.get('anaerobicTrainingEffect', 0), 1) or
+        existing_props["Effet anaérobie"]['select']['name'] != format_training_message(
         new_activity.get('anaerobicTrainingEffectMessage', 'Unknown')
     ) or
         existing_props['PR']['checkbox'] != new_activity.get('pr', False) or
-        existing_props['Fav']['checkbox'] != new_activity.get('favorite', False) or
-        existing_props['Activity Type']['select']['name'] != activity_type or
-        (has_subactivity and existing_props['Subactivity Type']['select']['name'] != activity_subtype) or
+        existing_props["Favori"]['checkbox'] != new_activity.get('favorite', False) or
+        existing_props["Type d'activité"]['select']['name'] != activity_type or
+        (has_subactivity and existing_props["Sous-type d'activité"]['select']['name'] != activity_subtype) or
         (not has_subactivity)  # If the property doesn't exist, we need an update
     )
 
@@ -208,26 +208,26 @@ def create_activity(notion_client: NotionClient, database_id: str, activity: dic
 
     properties = {
         "Date": {"date": {"start": activity_date}},
-        "Activity Type": {"select": {"name": activity_type}},
-        "Subactivity Type": {"select": {"name": activity_subtype}},
-        "Activity Name": {"title": [{"text": {"content": activity_name}}]},
+        "Type d'activité": {"select": {"name": activity_type}},
+        "Sous-type d'activité": {"select": {"name": activity_subtype}},
+        "Nom de l'activité": {"title": [{"text": {"content": activity_name}}]},
         "Distance (km)": {"number": round(activity.get('distance', 0) / 1000, 2)},
-        "Duration (min)": {"number": round(activity.get('duration', 0) / 60, 2)},
+        "Durée (min)": {"number": round(activity.get('duration', 0) / 60, 2)},
         "Calories": {"number": round(activity.get('calories', 0))},
-        "Avg Pace": {"rich_text": [{"text": {"content": format_pace(activity.get('averageSpeed', 0))}}]},
-        "Avg Power": {"number": round(activity.get('avgPower', 0), 1)},
-        "Max Power": {"number": round(activity.get('maxPower', 0), 1)},
-        "Training Effect": {"select": {"name": format_training_effect(activity.get('trainingEffectLabel', 'Unknown'))}},
-        "Aerobic": {"number": round(activity.get('aerobicTrainingEffect', 0), 1)},
-        "Aerobic Effect": {
+        "Allure moyenne": {"rich_text": [{"text": {"content": format_pace(activity.get('averageSpeed', 0))}}]},
+        "Puissance moyenne": {"number": round(activity.get('avgPower', 0), 1)},
+        "Puissance max": {"number": round(activity.get('maxPower', 0), 1)},
+        "Effet d'entraînement": {"select": {"name": format_training_effect(activity.get('trainingEffectLabel', 'Unknown'))}},
+        "Score aérobie": {"number": round(activity.get('aerobicTrainingEffect', 0), 1)},
+        "Effet aérobie": {
             "select": {"name": format_training_message(activity.get('aerobicTrainingEffectMessage', 'Unknown'))}
         },
-        "Anaerobic": {"number": round(activity.get('anaerobicTrainingEffect', 0), 1)},
-        "Anaerobic Effect": {
+        "Score anaérobie": {"number": round(activity.get('anaerobicTrainingEffect', 0), 1)},
+        "Effet anaérobie": {
             "select": {"name": format_training_message(activity.get('anaerobicTrainingEffectMessage', 'Unknown'))}
         },
         "PR": {"checkbox": activity.get('pr', False)},
-        "Fav": {"checkbox": activity.get('favorite', False)}
+        "Favori": {"checkbox": activity.get('favorite', False)}
     }
 
     page = {
@@ -253,27 +253,27 @@ def update_activity(notion_client: NotionClient, existing_activity: dict, new_ac
     icon_url = ACTIVITY_ICONS.get(activity_subtype if activity_subtype != activity_type else activity_type)
 
     properties = {
-        "Activity Type": {"select": {"name": activity_type}},
-        "Subactivity Type": {"select": {"name": activity_subtype}},
+        "Type d'activité": {"select": {"name": activity_type}},
+        "Sous-type d'activité": {"select": {"name": activity_subtype}},
         "Distance (km)": {"number": round(new_activity.get('distance', 0) / 1000, 2)},
-        "Duration (min)": {"number": round(new_activity.get('duration', 0) / 60, 2)},
+        "Durée (min)": {"number": round(new_activity.get('duration', 0) / 60, 2)},
         "Calories": {"number": round(new_activity.get('calories', 0))},
-        "Avg Pace": {"rich_text": [{"text": {"content": format_pace(new_activity.get('averageSpeed', 0))}}]},
-        "Avg Power": {"number": round(new_activity.get('avgPower', 0), 1)},
-        "Max Power": {"number": round(new_activity.get('maxPower', 0), 1)},
-        "Training Effect": {
+        "Allure moyenne": {"rich_text": [{"text": {"content": format_pace(new_activity.get('averageSpeed', 0))}}]},
+        "Puissance moyenne": {"number": round(new_activity.get('avgPower', 0), 1)},
+        "Puissance max": {"number": round(new_activity.get('maxPower', 0), 1)},
+        "Effet d'entraînement": {
             "select": {"name": format_training_effect(new_activity.get('trainingEffectLabel', 'Unknown'))}
         },
-        "Aerobic": {"number": round(new_activity.get('aerobicTrainingEffect', 0), 1)},
-        "Aerobic Effect": {
+        "Score aérobie": {"number": round(new_activity.get('aerobicTrainingEffect', 0), 1)},
+        "Effet aérobie": {
             "select": {"name": format_training_message(new_activity.get('aerobicTrainingEffectMessage', 'Unknown'))}
         },
-        "Anaerobic": {"number": round(new_activity.get('anaerobicTrainingEffect', 0), 1)},
-        "Anaerobic Effect": {
+        "Score anaérobie": {"number": round(new_activity.get('anaerobicTrainingEffect', 0), 1)},
+        "Effet anaérobie": {
             "select": {"name": format_training_message(new_activity.get('anaerobicTrainingEffectMessage', 'Unknown'))}
         },
         "PR": {"checkbox": new_activity.get('pr', False)},
-        "Fav": {"checkbox": new_activity.get('favorite', False)}
+        "Favori": {"checkbox": new_activity.get('favorite', False)}
     }
 
     update = {
