@@ -2,7 +2,7 @@ name: Sync Garmin to Notion
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Daily, 8:00 UTC = 9:00 Paris in winter (10:00 in summer, cron is UTC only)
+    - cron: '55 7 * * *' # Daily, 7:55 UTC = 8:55 Paris in winter (9:55 in summer, cron is UTC only). Off the top of the hour to limit GitHub delays.
   workflow_dispatch:
     inputs:
       GARMIN_ACTIVITIES_FETCH_LIMIT:
